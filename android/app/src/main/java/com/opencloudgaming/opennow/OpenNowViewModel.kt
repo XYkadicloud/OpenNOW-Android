@@ -590,6 +590,7 @@ class OpenNowViewModel(application: Application) : AndroidViewModel(application)
     private var gamesJob: Job? = null
     private var gameDetailsJob: Job? = null
     private var launchJob: Job? = null
+    private var externalLaunchJob: Job? = null
     private var activeSubscriptionJob: Job? = null
     private var pendingActiveSessionLaunch: PendingActiveSessionLaunch? = null
     private var launchInputModeChoice: CompletableDeferred<LaunchInputModeChoice>? = null
@@ -4126,18 +4127,40 @@ class OpenNowViewModel(application: Application) : AndroidViewModel(application)
         }
         val id = extractExternalLaunchId(intent)
         if (id.isNullOrBlank()) return
-        val allGames = state.value.games + state.value.libraryGames
-        val game = allGames.firstOrNull { game ->
-            game.id == id || game.uuid == id || game.launchAppId == id || game.variants.any { it.id == id }
-        } ?: GameInfo(
-            id = id,
-            uuid = id,
-            launchAppId = id.takeIf { it.all(Char::isDigit) },
-            title = intent.getStringExtra("title") ?: "Game $id",
-            selectedVariantIndex = 0,
-            variants = listOf(GameVariant(id = id, store = "Unknown")),
-        )
-        play(game)
+        val fallbackTitle = intent.getStringExtra("title") ?: "Game $id"
+        externalLaunchJob?.cancel()
+        // A pinned home-screen shortcut cold-starts the app, so the catalog request is still in
+        // flight when this intent arrives. Launching the placeholder right away reaches GFN with no
+        // store variant and fails, so wait for the real entry when one is on the way.
+        externalLaunchJob = viewModelScope.launch {
+            val resolved = awaitCatalogGame(id)
+            val game = resolved ?: GameInfo(
+                id = id,
+                uuid = id,
+                launchAppId = id.takeIf { it.all(Char::isDigit) },
+                title = fallbackTitle,
+                selectedVariantIndex = 0,
+                variants = listOf(GameVariant(id = id, store = "Unknown")),
+            )
+            play(game)
+        }
+    }
+
+    /** Polls until [id] appears in the catalog, or until the catalog has clearly finished loading. */
+    private suspend fun awaitCatalogGame(id: String, timeoutMs: Long = 12_000L): GameInfo? {
+        val deadline = SystemClock.elapsedRealtime() + timeoutMs
+        var settledChecks = 0
+        while (SystemClock.elapsedRealtime() < deadline) {
+            val snapshot = state.value
+            val match = (snapshot.games + snapshot.libraryGames).firstOrNull { game ->
+                game.id == id || game.uuid == id || game.launchAppId == id || game.variants.any { it.id == id }
+            }
+            if (match != null) return match
+            settledChecks = if (snapshot.games.isNotEmpty() && !snapshot.loadingGames) settledChecks + 1 else 0
+            if (settledChecks >= 3) return null
+            delay(250)
+        }
+        return null
     }
 
     private fun extractExternalLaunchId(intent: Intent): String? {
