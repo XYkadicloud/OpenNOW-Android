@@ -2,6 +2,11 @@ name: android-build
 
 on:
   workflow_dispatch:
+    inputs:
+      abis:
+        description: 'Comma-separated ABIs to package (empty = all four)'
+        required: false
+        default: 'arm64-v8a,armeabi-v7a,x86_64,x86'
   push:
     branches:
       - android-native
@@ -17,6 +22,8 @@ jobs:
     defaults:
       run:
         working-directory: android
+    env:
+      OPENNOW_ABIS: ${{ github.event.inputs.abis || 'arm64-v8a,armeabi-v7a,x86_64,x86' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,7 +64,8 @@ jobs:
           export CMAKE="$SDK/cmake/3.31.6/bin/cmake"
           export CMAKE_POLICY_VERSION_MINIMUM=3.5
           echo "Using CMAKE=$CMAKE"
-          ./gradlew --no-daemon --no-configuration-cache assembleDebug
+          echo "Packaging ABIs: $OPENNOW_ABIS"
+          ./gradlew --no-daemon --no-configuration-cache -Popennow.abis="$OPENNOW_ABIS" assembleDebug
 
       - name: Collect APK
         run: |
