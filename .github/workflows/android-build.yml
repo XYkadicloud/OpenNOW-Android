@@ -46,7 +46,7 @@ jobs:
           SDKMGR="$(find "$SDK/cmdline-tools" -maxdepth 3 -name sdkmanager -type f 2>/dev/null | head -1)"
           echo "sdkmanager: $SDKMGR"
           yes | "$SDKMGR" --licenses >/dev/null 2>&1 || true
-          "$SDKMGR" --install "platforms;android-37" "build-tools;36.0.0" "build-tools;35.0.0" "ndk;29.0.14206865" "cmake;3.22.1"
+          "$SDKMGR" --install "platforms;android-37.0" "platforms;android-37.1" "platforms;android-37.2" "build-tools;37.0.0" "build-tools;36.0.0" "ndk;29.0.14206865" "cmake;3.31.6"
           echo "sdk.dir=$SDK" > local.properties
 
       - name: Build debug APK
