@@ -48,8 +48,16 @@
     <string name="console_home_loading">正在加载游戏…</string>
     <string name="console_home_empty">还没有游戏。登录后点刷新即可载入目录。</string>
     <string name="console_home_shortcut_added">已把「%1$s」添加到主屏幕</string>
-    <string name="console_home_shortcut_unsupported">当前桌面不支持固定快捷方式</string>
+    <string name="console_home_shortcut_slot_added">已添加「%1$s」为桌面图标「OpenNOW 游戏 %2$d」</string>
+    <string name="console_home_shortcut_exists">「%1$s」已经在桌面上了</string>
+    <string name="console_home_shortcut_no_slot">桌面图标位已满（最多 6 个）</string>
     <string name="console_home_shortcut_failed">添加快捷方式失败</string>
+    <string name="console_shortcut_slot_1">OpenNOW 游戏 1</string>
+    <string name="console_shortcut_slot_2">OpenNOW 游戏 2</string>
+    <string name="console_shortcut_slot_3">OpenNOW 游戏 3</string>
+    <string name="console_shortcut_slot_4">OpenNOW 游戏 4</string>
+    <string name="console_shortcut_slot_5">OpenNOW 游戏 5</string>
+    <string name="console_shortcut_slot_6">OpenNOW 游戏 6</string>
     <string name="search_games">搜索游戏</string>
     <string name="search_settings">搜索设置</string>
     <string name="settings_category_general">通用</string>

@@ -111,6 +111,96 @@
                 <data android:scheme="http" android:host="127.0.0.1" android:port="9096" />
             </intent-filter>
         </activity>
+        <!--
+          Pinnable game slots. Most TV launchers (including the AQUOS one) never implement
+          ShortcutManager pinning, so "Add to Home screen" enables one of these aliases instead:
+          the launcher then shows it as its own app icon and MainActivity maps the alias back to the
+          game id stored in opennow_ui/shortcut_slot_<n>. All six ship disabled.
+        -->
+        <activity-alias
+            android:name=".GameShortcut1"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/opennow_icon"
+            android:banner="@drawable/opennow_banner"
+            android:label="@string/console_shortcut_slot_1"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".GameShortcut2"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/opennow_icon"
+            android:banner="@drawable/opennow_banner"
+            android:label="@string/console_shortcut_slot_2"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".GameShortcut3"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/opennow_icon"
+            android:banner="@drawable/opennow_banner"
+            android:label="@string/console_shortcut_slot_3"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".GameShortcut4"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/opennow_icon"
+            android:banner="@drawable/opennow_banner"
+            android:label="@string/console_shortcut_slot_4"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".GameShortcut5"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/opennow_icon"
+            android:banner="@drawable/opennow_banner"
+            android:label="@string/console_shortcut_slot_5"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".GameShortcut6"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/opennow_icon"
+            android:banner="@drawable/opennow_banner"
+            android:label="@string/console_shortcut_slot_6"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.updates"
