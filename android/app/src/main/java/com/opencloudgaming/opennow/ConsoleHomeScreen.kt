@@ -42,7 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -134,15 +134,14 @@ internal fun ConsoleHomeScreen(
         Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(ConsoleTop, ConsoleMid, ConsoleBottom)))
-            .drawBehind {
-                // A single soft glow keeps the flat gradient from looking like a dead panel.
-                drawRect(
-                    Brush.radialGradient(
-                        colors = listOf(ConsoleAccent.copy(alpha = 0.10f), Color.Transparent),
-                        center = Offset(size.width * 0.82f, size.height * 0.06f),
-                        radius = size.width.coerceAtLeast(size.height) * 0.7f,
-                    ),
+            .drawWithCache {
+                // Built once per size instead of once per frame.
+                val glow = Brush.radialGradient(
+                    colors = listOf(ConsoleAccent.copy(alpha = 0.10f), Color.Transparent),
+                    center = Offset(size.width * 0.82f, size.height * 0.06f),
+                    radius = size.width.coerceAtLeast(size.height) * 0.7f,
                 )
+                onDrawBehind { drawRect(glow) }
             },
     ) {
         Column(
@@ -210,6 +209,8 @@ internal fun ConsoleHomeScreen(
                                                 val message = when (result.kind) {
                                                     GameShortcuts.PinResult.Kind.Pinned ->
                                                         context.getString(R.string.console_home_shortcut_added, game.title)
+                                                    GameShortcuts.PinResult.Kind.ChannelAdded ->
+                                                        context.getString(R.string.console_home_channel_added, game.title)
                                                     GameShortcuts.PinResult.Kind.SlotAdded ->
                                                         context.getString(R.string.console_home_shortcut_slot_added, game.title, result.slot)
                                                     GameShortcuts.PinResult.Kind.AlreadyAdded ->
@@ -358,7 +359,19 @@ private fun ConsoleHeroCard(
     actions: @Composable () -> Unit = {},
 ) {
     val context = LocalContext.current
-    val banner = remember(game?.id, context) { gameTvBannerImageUrl(context, game) }
+    // D-pad traversal across the rail fires a focus change per tile. Requesting a fresh banner for
+    // every one of those queued a network round trip plus a full-size decode per step, which is what
+    // made the rail feel sticky on a 2019 TV. Only the tile the player settles on is fetched.
+    var banner by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(game?.id) {
+        val target = game
+        if (target == null) {
+            banner = null
+            return@LaunchedEffect
+        }
+        delay(140)
+        banner = gameTvBannerImageUrl(context, target)
+    }
     val shape = RoundedCornerShape(20.dp)
     Box(
         modifier

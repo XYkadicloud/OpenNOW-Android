@@ -48,6 +48,7 @@
     <string name="console_home_loading">正在加载游戏…</string>
     <string name="console_home_empty">还没有游戏。登录后点刷新即可载入目录。</string>
     <string name="console_home_shortcut_added">已把「%1$s」添加到主屏幕</string>
+    <string name="console_home_channel_added">已把「%1$s」添加到电视主页</string>
     <string name="console_home_shortcut_slot_added">已添加「%1$s」为桌面图标「OpenNOW 游戏 %2$d」</string>
     <string name="console_home_shortcut_exists">「%1$s」已经在桌面上了</string>
     <string name="console_home_shortcut_no_slot">桌面图标位已满（最多 6 个）</string>
@@ -725,7 +726,9 @@
     <string name="settings_stream_keyboard_button_desc">在串流状态栏中显示一个紧凑的键盘图标。</string>
     <string name="settings_show_stats">默认显示状态栏</string>
     <string name="settings_stats_position">统计叠层位置</string>
-    <string name="settings_hide_server_selector">隐藏服务器选择器</string>
+    <string name="settings_hide_server_selector">不再每次选择服务器</string>
+    <string name="settings_hide_server_selector_desc">点游戏直接用「%1$s」排队。要换服务器，改上面的「服务器」即可。</string>
+    <string name="settings_hide_server_selector_desc_auto">点游戏直接用当前区域的默认服务器排队。想固定某一台，在上面「服务器」里选。</string>
     <string name="settings_button_press_tones">按键提示音</string>
     <string name="settings_button_press_tones_desc">为手柄导航和屏幕控件按下播放短暂的 UI 音效。</string>
     <string name="settings_stream_intro_music">播放开场音乐</string>
