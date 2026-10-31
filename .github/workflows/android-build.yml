@@ -37,22 +37,17 @@ jobs:
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install Android SDK packages
+        shell: bash
         run: |
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager --install \
-            "platform-tools" \
-            "platforms;android-37" \
-            "build-tools;35.0.0" \
-            "build-tools;36.0.0" \
-            "ndk;29.0.14206865" \
-            "cmake;3.22.1"
-
-      - name: Point Gradle at the SDK
-        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          set -euo pipefail
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          echo "Android SDK at: $SDK"
+          SDKMGR="$(find "$SDK/cmdline-tools" -maxdepth 3 -name sdkmanager -type f 2>/dev/null | head -1)"
+          echo "sdkmanager: $SDKMGR"
+          yes | "$SDKMGR" --licenses >/dev/null 2>&1 || true
+          "$SDKMGR" --install "platforms;android-37" "build-tools;36.0.0" "build-tools;35.0.0" "ndk;29.0.14206865" "cmake;3.22.1"
+          echo "sdk.dir=$SDK" > local.properties
 
       - name: Build debug APK
         run: ./gradlew --no-daemon --no-configuration-cache assembleDebug
