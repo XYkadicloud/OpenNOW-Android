@@ -148,7 +148,7 @@ internal fun ConsoleHomeScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(horizontal = if (tvProfile) 34.dp else 20.dp, vertical = if (tvProfile) 22.dp else 14.dp),
+                .padding(horizontal = if (tvProfile) 30.dp else 18.dp, vertical = if (tvProfile) 16.dp else 12.dp),
         ) {
             ConsoleTopBar(
                 state = state,
@@ -197,38 +197,37 @@ internal fun ConsoleHomeScreen(
                         ConsoleHeroCard(
                             game = selected,
                             modifier = Modifier.size(cardWidth, cardHeight),
+                            actions = {
+                                ConsoleActionRow(
+                                    canAct = selected != null,
+                                    onPlay = { selected?.let { viewModel.play(it) } },
+                                    onDetails = { selected?.let { viewModel.selectGame(it) } },
+                                    onAddToHome = {
+                                        val game = selected
+                                        if (game != null) {
+                                            scope.launch {
+                                                val result = GameShortcuts.pin(context, game)
+                                                val message = when (result.kind) {
+                                                    GameShortcuts.PinResult.Kind.Pinned ->
+                                                        context.getString(R.string.console_home_shortcut_added, game.title)
+                                                    GameShortcuts.PinResult.Kind.SlotAdded ->
+                                                        context.getString(R.string.console_home_shortcut_slot_added, game.title, result.slot)
+                                                    GameShortcuts.PinResult.Kind.AlreadyAdded ->
+                                                        context.getString(R.string.console_home_shortcut_exists, game.title)
+                                                    GameShortcuts.PinResult.Kind.NoSlot ->
+                                                        context.getString(R.string.console_home_shortcut_no_slot)
+                                                    GameShortcuts.PinResult.Kind.Failed ->
+                                                        context.getString(R.string.console_home_shortcut_failed)
+                                                }
+                                                toast(context, message)
+                                            }
+                                        }
+                                    },
+                                )
+                            },
                         )
                     }
                 }
-
-                Spacer(Modifier.height(if (tvProfile) 14.dp else 10.dp))
-
-                ConsoleActionRow(
-                    canAct = selected != null,
-                    onPlay = { selected?.let { viewModel.play(it) } },
-                    onDetails = { selected?.let { viewModel.selectGame(it) } },
-                    onAddToHome = {
-                        val game = selected
-                        if (game != null) {
-                            scope.launch {
-                                val result = GameShortcuts.pin(context, game)
-                                val message = when (result.kind) {
-                                    GameShortcuts.PinResult.Kind.Pinned ->
-                                        context.getString(R.string.console_home_shortcut_added, game.title)
-                                    GameShortcuts.PinResult.Kind.SlotAdded ->
-                                        context.getString(R.string.console_home_shortcut_slot_added, game.title, result.slot)
-                                    GameShortcuts.PinResult.Kind.AlreadyAdded ->
-                                        context.getString(R.string.console_home_shortcut_exists, game.title)
-                                    GameShortcuts.PinResult.Kind.NoSlot ->
-                                        context.getString(R.string.console_home_shortcut_no_slot)
-                                    GameShortcuts.PinResult.Kind.Failed ->
-                                        context.getString(R.string.console_home_shortcut_failed)
-                                }
-                                toast(context, message)
-                            }
-                        }
-                    },
-                )
 
                 Spacer(Modifier.height(if (tvProfile) 14.dp else 10.dp))
 
@@ -243,7 +242,7 @@ internal fun ConsoleHomeScreen(
                         Box(Modifier.padding(6.dp)) {
                             ConsoleGameTile(
                                 game = game,
-                                size = if (tvProfile) 74.dp else 62.dp,
+                                size = if (tvProfile) 70.dp else 62.dp,
                                 focusedTile = game.id == selected?.id,
                                 modifier = if (index == 0) Modifier.focusRequester(firstTileRequester) else Modifier,
                                 onFocused = { selectedId = game.id },
@@ -353,7 +352,11 @@ private fun ConsoleIconButton(icon: ImageVector, label: String, onClick: () -> U
 }
 
 @Composable
-private fun ConsoleHeroCard(game: GameInfo?, modifier: Modifier = Modifier) {
+private fun ConsoleHeroCard(
+    game: GameInfo?,
+    modifier: Modifier = Modifier,
+    actions: @Composable () -> Unit = {},
+) {
     val context = LocalContext.current
     val banner = remember(game?.id, context) { gameTvBannerImageUrl(context, game) }
     val shape = RoundedCornerShape(20.dp)
@@ -376,8 +379,8 @@ private fun ConsoleHeroCard(game: GameInfo?, modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        0.35f to Color.Transparent,
-                        1f to Color(0xF20A0E14),
+                        0.28f to Color.Transparent,
+                        1f to Color(0xF70A0E14),
                     ),
                 ),
         )
@@ -385,13 +388,13 @@ private fun ConsoleHeroCard(game: GameInfo?, modifier: Modifier = Modifier) {
             Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .padding(horizontal = 26.dp, vertical = 20.dp),
+                .padding(horizontal = 24.dp, vertical = 18.dp),
         ) {
             Text(
                 text = game?.title.orEmpty(),
                 color = ConsoleText,
-                fontSize = 30.sp,
-                lineHeight = 34.sp,
+                fontSize = 28.sp,
+                lineHeight = 32.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -404,9 +407,11 @@ private fun ConsoleHeroCard(game: GameInfo?, modifier: Modifier = Modifier) {
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 6.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                 )
             }
+            Spacer(Modifier.height(12.dp))
+            actions()
         }
     }
 }
