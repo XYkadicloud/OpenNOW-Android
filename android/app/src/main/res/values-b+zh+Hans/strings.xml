@@ -313,7 +313,7 @@
     <string name="stream_panel_key_esc">Esc</string>
     <string name="stream_panel_key_enter">Enter</string>
     <string name="stream_panel_key_backspace">⌫</string>
-    <item name="stream_panel_clear">@string/dev_action_clear</item>
+    <item name="stream_panel_clear" type="string">@string/dev_action_clear</item>
     <string name="stream_keyboard_clear_confirm_title">清除串流文本？</string>
     <string name="stream_keyboard_clear_confirm_body">这会清除串流游戏中当前聚焦的文本框。</string>
     <string name="stream_keyboard_clear_never_ask_again">永远不再询问</string>
