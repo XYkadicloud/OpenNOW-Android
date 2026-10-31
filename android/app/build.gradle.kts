@@ -23,6 +23,19 @@ androidComponents.onVariants { variant ->
     )
 }
 
+// -Popennow.noHome=true ships the app without the android.intent.category.HOME role, so it never
+// offers itself as a replacement TV home screen. The UI, game shortcuts and TV channels are
+// identical; only the launcher takeover is dropped. Two APKs, same signature, same login state.
+val buildingWithoutHomeLauncher =
+    providers.gradleProperty("opennow.noHome").orNull.equals("true", ignoreCase = true)
+
+val sideloadManifest =
+    if (buildingWithoutHomeLauncher) {
+        "src/sideload-standard/AndroidManifest.xml"
+    } else {
+        "src/sideload/AndroidManifest.xml"
+    }
+
 val buildingPlayReleaseBundle =
     providers.gradleProperty("distribution").orNull.equals("play-store", ignoreCase = true) ||
         gradle.startParameter.taskNames.any { taskName ->
@@ -93,12 +106,12 @@ android {
     }
 
     sourceSets {
-        getByName("debug").manifest.srcFile("src/sideload/AndroidManifest.xml")
+        getByName("debug").manifest.srcFile(sideloadManifest)
         getByName("release").manifest.srcFile(
             if (buildingPlayReleaseBundle) {
                 "src/playBundle/AndroidManifest.xml"
             } else {
-                "src/sideload/AndroidManifest.xml"
+                sideloadManifest
             },
         )
     }
