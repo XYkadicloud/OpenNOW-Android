@@ -1107,9 +1107,9 @@ private fun SettingsContent(
                 }
                 val switchHomeContext = LocalContext.current
                 SettingSwitch(
-                    label = "Switch 风格主界面",
+                    label = stringResource(R.string.console_home_settings_label),
                     checked = HomeUiState.useSwitchStyle.value,
-                    description = "用 Nintendo Switch 风格的大圆角磁贴作为主界面；关闭则回到经典界面",
+                    description = stringResource(R.string.console_home_settings_desc),
                 ) { enabled ->
                     HomeUiState.set(switchHomeContext, enabled)
                 }

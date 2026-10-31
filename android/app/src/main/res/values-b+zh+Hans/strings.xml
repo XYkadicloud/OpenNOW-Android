@@ -41,6 +41,15 @@
     <string name="nav_search">搜索</string>
     <string name="nav_library">游戏库</string>
     <string name="nav_settings">设置</string>
+    <string name="console_home_settings_label">主机风格主界面</string>
+    <string name="console_home_settings_desc">用一张 16:9 宽幅游戏卡 + 底部游戏图标栏作为主界面；关闭则回到经典商店界面。</string>
+    <string name="console_home_add_shortcut">添加到主屏幕</string>
+    <string name="console_home_details">详情</string>
+    <string name="console_home_loading">正在加载游戏…</string>
+    <string name="console_home_empty">还没有游戏。登录后点刷新即可载入目录。</string>
+    <string name="console_home_shortcut_added">已把「%1$s」添加到主屏幕</string>
+    <string name="console_home_shortcut_unsupported">当前桌面不支持固定快捷方式</string>
+    <string name="console_home_shortcut_failed">添加快捷方式失败</string>
     <string name="search_games">搜索游戏</string>
     <string name="search_settings">搜索设置</string>
     <string name="settings_category_general">通用</string>
