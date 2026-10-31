@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
@@ -184,6 +185,17 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleExternalLaunchIntent(intent: Intent) {
+        // A pinned game icon is one of the GameShortcut<n> activity aliases; the alias carries no
+        // data of its own, so the game id comes from the slot mapping written when it was pinned.
+        val shortcutGameId = GameShortcuts.gameIdForLaunchComponent(this, intent.component)
+        if (shortcutGameId != null) {
+            viewModel.handleExternalLaunchIntent(
+                Intent(Intent.ACTION_VIEW, Uri.parse("opennow://launch/$shortcutGameId")).apply {
+                    putExtra("id", shortcutGameId)
+                },
+            )
+            return
+        }
         if (isLocalTvPairUri(intent.data) && !hasAndroidLocalNetworkAccess()) {
             pendingLocalNetworkIntent = intent
             localNetworkPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
