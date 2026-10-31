@@ -985,6 +985,9 @@ private fun MainShell(
     val tvProfile = state.androidTvProfile
     val physicalControllerConnected = rememberPhysicalControllerConnected(enabled = !inStream)
     val spaceUi = shouldUseSpaceUi(state.settings.experimentalSpaceUi, state.page)
+    // The console shell owns the whole window on Home: it draws its own top bar, its own action row
+    // and its own icon rail, so the app rail, the status bar and the phone bottom bar stay out of it.
+    val consoleHome = HomeUiState.useSwitchStyle.value && state.page == AppPage.Home && !inStream
     val spaceUiStateHolder = rememberSaveableStateHolder()
     val navAudioController = remember(context) { AndroidNerdAudioController(context.applicationContext) }
     var visibleSearchTarget by remember { mutableStateOf<SearchTarget?>(null) }
@@ -1103,7 +1106,7 @@ private fun MainShell(
             containerColor = Color.Transparent,
             contentWindowInsets = if (streamingActive || tvProfile || (spaceUi && horizontalChrome)) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
             bottomBar = {
-                if (!inStream && !showNavigationRail && !spaceUi) {
+                if (!inStream && !showNavigationRail && !spaceUi && !consoleHome) {
                     Column {
                         if (showMinimizedQueueDock) {
                             MinimizedQueueDock(
@@ -1166,7 +1169,13 @@ private fun MainShell(
                         false
                     },
             ) {
-                if (spaceUi) {
+                if (consoleHome) {
+                    ConsoleHomeScreen(
+                        state = state,
+                        viewModel = viewModel,
+                        tvProfile = tvProfile,
+                    )
+                } else if (spaceUi) {
                     Box(Modifier.fillMaxSize().padding(screenEdgePadding)) {
                         spaceUiStateHolder.SaveableStateProvider("space-ui") {
                             SpaceUiTheme {
@@ -1381,31 +1390,23 @@ private fun MainShell(
                                     modifier = Modifier.fillMaxSize(),
                                 ) { page ->
                                     when (page) {
-                                        AppPage.Home -> if (HomeUiState.useSwitchStyle.value) {
-                                            SwitchStyleHomeScreen(
-                                                state = state,
-                                                viewModel = viewModel,
-                                                tvProfile = tvProfile,
-                                            )
-                                        } else {
-                                            HomeScreen(
-                                                state = state,
-                                                viewModel = viewModel,
-                                                tvProfile = tvProfile,
-                                                hideChromeWhenScrolled = phoneLandscapeChrome,
-                                                controlsInTopBar = storeControlsInTopBar,
-                                                topBarFocusRequester = catalogFilterFocusRequester.takeIf {
-                                                    storeControlsInTopBar
-                                                },
-                                                searchRequested = visibleSearchTarget == SearchTarget.Store,
-                                                onSearchDismissed = {
-                                                    if (visibleSearchTarget == SearchTarget.Store) {
-                                                        visibleSearchTarget = null
-                                                    }
-                                                },
-                                                onScrollChromeHiddenChange = { phoneLandscapeScrollChromeHidden = it },
-                                            )
-                                        }
+                                        AppPage.Home -> HomeScreen(
+                                            state = state,
+                                            viewModel = viewModel,
+                                            tvProfile = tvProfile,
+                                            hideChromeWhenScrolled = phoneLandscapeChrome,
+                                            controlsInTopBar = storeControlsInTopBar,
+                                            topBarFocusRequester = catalogFilterFocusRequester.takeIf {
+                                                storeControlsInTopBar
+                                            },
+                                            searchRequested = visibleSearchTarget == SearchTarget.Store,
+                                            onSearchDismissed = {
+                                                if (visibleSearchTarget == SearchTarget.Store) {
+                                                    visibleSearchTarget = null
+                                                }
+                                            },
+                                            onScrollChromeHiddenChange = { phoneLandscapeScrollChromeHidden = it },
+                                        )
                                         AppPage.Library -> LibraryScreen(
                                             state = state,
                                             viewModel = viewModel,
