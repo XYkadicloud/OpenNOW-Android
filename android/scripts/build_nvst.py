@@ -27,12 +27,17 @@ if not cmake:
 # Prefer rustup's target-aware toolchain over a Homebrew host-only installation.
 if 'CARGO' not in os.environ and (Path.home() / '.cargo/bin/cargo').exists():
     cargo = str(Path.home() / '.cargo/bin/cargo')
+# OPENNOW_ABIS narrows the packaged ABIs (see app/build.gradle.kts -Popennow.abis).
+# Unset means "build every ABI", which is what a normal release wants.
+_only = [a.strip() for a in os.environ.get('OPENNOW_ABIS', '').split(',') if a.strip()]
 for abi, target, clang_target in [
     ('arm64-v8a', 'aarch64-linux-android', 'aarch64-linux-android'),
     ('armeabi-v7a', 'armv7-linux-androideabi', 'armv7a-linux-androideabi'),
     ('x86_64', 'x86_64-linux-android', 'x86_64-linux-android'),
     ('x86', 'i686-linux-android', 'i686-linux-android'),
 ]:
+    if _only and abi not in _only:
+        continue
     env = os.environ.copy()
     suffix = '.cmd' if os.name == 'nt' else ''
     cc_path = toolchain / (clang_target + '23-clang' + suffix)
