@@ -1105,6 +1105,14 @@ private fun SettingsContent(
                 ) { enabled ->
                     viewModel.updateStreamSettings { s -> s.copy(browserClientMode = enabled) }
                 }
+                val switchHomeContext = LocalContext.current
+                SettingSwitch(
+                    label = "Switch 风格主界面",
+                    checked = HomeUiState.useSwitchStyle.value,
+                    description = "用 Nintendo Switch 风格的大圆角磁贴作为主界面；关闭则回到经典界面",
+                ) { enabled ->
+                    HomeUiState.set(switchHomeContext, enabled)
+                }
                 ChoiceRow(stringResource(R.string.settings_region), listOf(stringResource(R.string.option_auto)) + state.regions.map { it.name }, state.regions.firstOrNull { it.url == settings.stream.region }?.name ?: stringResource(R.string.option_auto)) { label ->
                     val url = state.regions.firstOrNull { it.name == label }?.url.orEmpty()
                     viewModel.updateStreamSettings { s -> s.copy(region = url) }
