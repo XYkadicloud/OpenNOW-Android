@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      Sideload overlay WITHOUT the HOME role.
+
+      Identical to src/sideload/AndroidManifest.xml except that MainActivity does not register
+      android.intent.category.HOME. The app therefore behaves like an ordinary TV app: it appears
+      in the launcher's app row, but it never offers itself as a replacement home screen, so the
+      TV's own launcher keeps the Home button.
+
+      Selected with -Popennow.noHome=true. Everything else (game shortcuts, TV channels) is
+      unchanged; only the launcher takeover is dropped.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+    </queries>
+
+    <application>
+        <!-- Matches the value the main manifest already merges in; stated here so the
+             fragment is self-describing and Android 12's exported requirement is explicit. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+    </application>
+</manifest>

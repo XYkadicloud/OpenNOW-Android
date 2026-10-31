@@ -7,6 +7,13 @@ on:
         description: 'Single ABI to build (empty = both arm64-v8a and armeabi-v7a)'
         required: false
         default: ''
+      variant:
+        description: 'launcher = app can act as the TV home screen; standard = normal app, keeps the TV launcher'
+        type: choice
+        options:
+          - launcher
+          - standard
+        default: launcher
   push:
     branches:
       - android-native
@@ -17,7 +24,7 @@ permissions:
 
 jobs:
   build:
-    name: build-debug-apk-${{ matrix.abi }}
+    name: build-debug-apk-${{ matrix.abi }}-${{ github.event.inputs.variant || 'launcher' }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -28,6 +35,7 @@ jobs:
         abi: ${{ github.event.inputs.abi != '' && fromJSON(format('["{0}"]', github.event.inputs.abi)) || fromJSON('["arm64-v8a","armeabi-v7a"]') }}
     env:
       OPENNOW_ABIS: ${{ matrix.abi }}
+      OPENNOW_VARIANT: ${{ github.event.inputs.variant || 'launcher' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,18 +76,25 @@ jobs:
           export CMAKE="$SDK/cmake/3.31.6/bin/cmake"
           export CMAKE_POLICY_VERSION_MINIMUM=3.5
           echo "Using CMAKE=$CMAKE"
-          echo "Packaging single ABI: $OPENNOW_ABIS"
-          ./gradlew --no-daemon --no-configuration-cache -Popennow.abis="$OPENNOW_ABIS" assembleDebug
+          echo "Packaging single ABI: $OPENNOW_ABIS  variant: $OPENNOW_VARIANT"
+          EXTRA=""
+          if [ "$OPENNOW_VARIANT" = "standard" ]; then
+            EXTRA="-Popennow.noHome=true"
+            echo "Building WITHOUT the HOME role (normal app, keeps the TV launcher)"
+          else
+            echo "Building WITH the HOME role (app can be the TV home screen)"
+          fi
+          ./gradlew --no-daemon --no-configuration-cache -Popennow.abis="$OPENNOW_ABIS" $EXTRA assembleDebug
 
       - name: Collect APK
         run: |
           mkdir -p ../out
-          find app/build/outputs/apk -name '*.apk' -exec cp -v {} ../out/app-${{ matrix.abi }}-debug.apk \;
+          find app/build/outputs/apk -name '*.apk' -exec cp -v {} ../out/OpenNOW-${{ github.event.inputs.variant || 'launcher' }}-${{ matrix.abi }}.apk \;
           ls -la ../out
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: opennow-debug-${{ matrix.abi }}
+          name: opennow-${{ github.event.inputs.variant || 'launcher' }}-${{ matrix.abi }}
           path: out/*.apk
           if-no-files-found: error
