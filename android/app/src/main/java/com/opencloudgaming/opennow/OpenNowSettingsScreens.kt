@@ -1671,7 +1671,16 @@ private fun SettingsContent(
                 ) { value ->
                     viewModel.updateSettings(settings.copy(posterSizeScale = value))
                 }
-                SettingSwitch(stringResource(R.string.settings_hide_server_selector), settings.hideServerSelector) { viewModel.updateSettings(settings.copy(hideServerSelector = it)) }
+                val defaultServerName = state.regions.firstOrNull { it.url == settings.stream.region }?.name
+                SettingSwitch(
+                    label = stringResource(R.string.settings_hide_server_selector),
+                    checked = settings.hideServerSelector,
+                    description = if (defaultServerName != null) {
+                        stringResource(R.string.settings_hide_server_selector_desc, defaultServerName)
+                    } else {
+                        stringResource(R.string.settings_hide_server_selector_desc_auto)
+                    },
+                ) { hidden -> viewModel.updateSettings(settings.copy(hideServerSelector = hidden)) }
             }
     CategorySettingsSection(selectedCategory, SettingsCategory.Interface, searchQuery, stringResource(R.string.settings_section_status_bar), "interface", "stats", "status bar", "position", "fps", "ping", "bitrate", "keyboard", "button", "background", "opacity", "transparent") {
                 SettingSwitch(stringResource(R.string.settings_show_stats), settings.showStatsOnLaunch) { viewModel.updateSettings(settings.copy(showStatsOnLaunch = it)) }

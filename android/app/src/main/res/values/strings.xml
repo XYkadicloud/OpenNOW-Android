@@ -48,6 +48,7 @@
     <string name="console_home_loading">Loading your games…</string>
     <string name="console_home_empty">No games yet. Sign in and refresh to load your catalog.</string>
     <string name="console_home_shortcut_added">Added %1$s to your home screen</string>
+    <string name="console_home_channel_added">Added %1$s to your TV home screen</string>
     <string name="console_home_shortcut_slot_added">Added %1$s as home icon “OpenNOW Game %2$d”</string>
     <string name="console_home_shortcut_exists">%1$s is already on your home screen</string>
     <string name="console_home_shortcut_no_slot">No free home-icon slots left (6 max)</string>
@@ -744,7 +745,9 @@
     <string name="settings_stream_keyboard_button_desc">Shows a compact keyboard icon in the stream status bar.</string>
     <string name="settings_show_stats">Show status bar by default</string>
     <string name="settings_stats_position">Stats overlay position</string>
-    <string name="settings_hide_server_selector">Hide server selector</string>
+    <string name="settings_hide_server_selector">Skip the server picker</string>
+    <string name="settings_hide_server_selector_desc">Start queuing on %1$s straight away. Change the server above with “Region”.</string>
+    <string name="settings_hide_server_selector_desc_auto">Start queuing on your provider\'s default server straight away. Pick a specific one above with “Region”.</string>
     <string name="settings_button_press_tones">Button press tones</string>
     <string name="settings_button_press_tones_desc">Plays a short UI tone for controller navigation and on-screen control presses.</string>
     <string name="settings_stream_intro_music">Play intro music</string>

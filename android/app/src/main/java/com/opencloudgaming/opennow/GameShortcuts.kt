@@ -29,7 +29,7 @@ internal object GameShortcuts {
     const val SLOT_COUNT = 6
 
     data class PinResult(val kind: Kind, val slot: Int = 0) {
-        enum class Kind { Pinned, SlotAdded, AlreadyAdded, NoSlot, Failed }
+        enum class Kind { Pinned, ChannelAdded, SlotAdded, AlreadyAdded, NoSlot, Failed }
     }
 
     fun isSupported(context: Context): Boolean =
@@ -38,6 +38,13 @@ internal object GameShortcuts {
 
     suspend fun pin(context: Context, game: GameInfo): PinResult {
         existingSlot(context, game.id)?.let { return PinResult(PinResult.Kind.AlreadyAdded, it) }
+        // On a TV the pinned-shortcut API is a dead end: the framework may claim support while the
+        // vendor launcher accepts the request and draws nothing. Publish to the TV provider instead,
+        // which is the mechanism Android TV actually renders.
+        if (TvChannels.isAndroidTv(context)) {
+            if (TvChannels.publish(context, game)) return PinResult(PinResult.Kind.ChannelAdded)
+            return pinAliasSlot(context, game)
+        }
         if (isSupported(context)) {
             if (pinLauncherShortcut(context, game)) return PinResult(PinResult.Kind.Pinned)
         }

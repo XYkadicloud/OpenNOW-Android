@@ -3552,6 +3552,11 @@ class OpenNowViewModel(application: Application) : AndroidViewModel(application)
             return
         }
         recordDebugEvent("queue", "PrintedWaste selection game=${game.title} zone=${hostForDebug(zoneUrl)} auto=${zoneUrl == null}")
+        if (zoneUrl != null) {
+            // Remember the server the player just picked. Settings > Stream shows it as the default,
+            // so turning on "skip the server picker" starts queueing here without another prompt.
+            updateStreamSettings { it.copy(region = zoneUrl) }
+        }
         launchJob?.cancel()
         launchJob = null
         _state.update {
