@@ -212,12 +212,19 @@ internal fun ConsoleHomeScreen(
                         if (game != null) {
                             scope.launch {
                                 val result = GameShortcuts.pin(context, game)
-                                val messageRes = when (result) {
-                                    GameShortcuts.Result.Pinned -> R.string.console_home_shortcut_added
-                                    GameShortcuts.Result.Unsupported -> R.string.console_home_shortcut_unsupported
-                                    GameShortcuts.Result.Failed -> R.string.console_home_shortcut_failed
+                                val message = when (result.kind) {
+                                    GameShortcuts.PinResult.Kind.Pinned ->
+                                        context.getString(R.string.console_home_shortcut_added, game.title)
+                                    GameShortcuts.PinResult.Kind.SlotAdded ->
+                                        context.getString(R.string.console_home_shortcut_slot_added, game.title, result.slot)
+                                    GameShortcuts.PinResult.Kind.AlreadyAdded ->
+                                        context.getString(R.string.console_home_shortcut_exists, game.title)
+                                    GameShortcuts.PinResult.Kind.NoSlot ->
+                                        context.getString(R.string.console_home_shortcut_no_slot)
+                                    GameShortcuts.PinResult.Kind.Failed ->
+                                        context.getString(R.string.console_home_shortcut_failed)
                                 }
-                                toast(context, context.getString(messageRes, game.title))
+                                toast(context, message)
                             }
                         }
                     },

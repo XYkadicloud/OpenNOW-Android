@@ -48,8 +48,16 @@
     <string name="console_home_loading">Loading your games…</string>
     <string name="console_home_empty">No games yet. Sign in and refresh to load your catalog.</string>
     <string name="console_home_shortcut_added">Added %1$s to your home screen</string>
-    <string name="console_home_shortcut_unsupported">This launcher does not support pinned shortcuts</string>
+    <string name="console_home_shortcut_slot_added">Added %1$s as home icon “OpenNOW Game %2$d”</string>
+    <string name="console_home_shortcut_exists">%1$s is already on your home screen</string>
+    <string name="console_home_shortcut_no_slot">No free home-icon slots left (6 max)</string>
     <string name="console_home_shortcut_failed">Could not add the shortcut</string>
+    <string name="console_shortcut_slot_1">OpenNOW Game 1</string>
+    <string name="console_shortcut_slot_2">OpenNOW Game 2</string>
+    <string name="console_shortcut_slot_3">OpenNOW Game 3</string>
+    <string name="console_shortcut_slot_4">OpenNOW Game 4</string>
+    <string name="console_shortcut_slot_5">OpenNOW Game 5</string>
+    <string name="console_shortcut_slot_6">OpenNOW Game 6</string>
     <string name="search_games">Search games</string>
     <string name="search_settings">Search settings</string>
     <string name="settings_category_general">General</string>
