@@ -98,6 +98,7 @@ class MainActivity : ComponentActivity() {
         defaultRequestedOrientation = requestedOrientation
         volumeControlStream = AudioManager.STREAM_MUSIC
         val openNowApplication = application as OpenNowApplication
+        HomeUiState.load(this)
         pendingExternalLaunchIntent = intent
         setContent {
             var ready by remember { mutableStateOf(false) }

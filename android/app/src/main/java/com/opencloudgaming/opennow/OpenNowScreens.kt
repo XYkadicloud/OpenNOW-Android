@@ -1381,23 +1381,31 @@ private fun MainShell(
                                     modifier = Modifier.fillMaxSize(),
                                 ) { page ->
                                     when (page) {
-                                        AppPage.Home -> HomeScreen(
-                                            state = state,
-                                            viewModel = viewModel,
-                                            tvProfile = tvProfile,
-                                            hideChromeWhenScrolled = phoneLandscapeChrome,
-                                            controlsInTopBar = storeControlsInTopBar,
-                                            topBarFocusRequester = catalogFilterFocusRequester.takeIf {
-                                                storeControlsInTopBar
-                                            },
-                                            searchRequested = visibleSearchTarget == SearchTarget.Store,
-                                            onSearchDismissed = {
-                                                if (visibleSearchTarget == SearchTarget.Store) {
-                                                    visibleSearchTarget = null
-                                                }
-                                            },
-                                            onScrollChromeHiddenChange = { phoneLandscapeScrollChromeHidden = it },
-                                        )
+                                        AppPage.Home -> if (HomeUiState.useSwitchStyle.value) {
+                                            SwitchStyleHomeScreen(
+                                                state = state,
+                                                viewModel = viewModel,
+                                                tvProfile = tvProfile,
+                                            )
+                                        } else {
+                                            HomeScreen(
+                                                state = state,
+                                                viewModel = viewModel,
+                                                tvProfile = tvProfile,
+                                                hideChromeWhenScrolled = phoneLandscapeChrome,
+                                                controlsInTopBar = storeControlsInTopBar,
+                                                topBarFocusRequester = catalogFilterFocusRequester.takeIf {
+                                                    storeControlsInTopBar
+                                                },
+                                                searchRequested = visibleSearchTarget == SearchTarget.Store,
+                                                onSearchDismissed = {
+                                                    if (visibleSearchTarget == SearchTarget.Store) {
+                                                        visibleSearchTarget = null
+                                                    }
+                                                },
+                                                onScrollChromeHiddenChange = { phoneLandscapeScrollChromeHidden = it },
+                                            )
+                                        }
                                         AppPage.Library -> LibraryScreen(
                                             state = state,
                                             viewModel = viewModel,
