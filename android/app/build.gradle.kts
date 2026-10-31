@@ -50,7 +50,14 @@ android {
 
         ndk {
             // Keep legacy Intel TV devices eligible; App Bundles deliver only the matching ABI.
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+            // -Popennow.abis=armeabi-v7a narrows the APK for sideloading onto 32-bit TVs with
+            // almost no free /data: the three unused ABI trees are ~66 MB of the ~113 MB APK.
+            val requestedAbis = (findProperty("opennow.abis") as String?)
+                ?.split(',')
+                ?.map(String::trim)
+                ?.filter(String::isNotEmpty)
+                ?.takeIf { it.isNotEmpty() }
+            abiFilters += requestedAbis ?: listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
         }
 
     }
