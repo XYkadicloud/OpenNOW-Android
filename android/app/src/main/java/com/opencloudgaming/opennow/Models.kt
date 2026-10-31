@@ -218,8 +218,9 @@ data class StreamSettings(
     val sessionProxyUrl: String = "",
     val enableL4S: Boolean = false,
     val experimentalNvst: Boolean = false,
-    /** Opt in to the browser CloudMatch identity for the next NVIDIA session. */
-    val browserClientMode: Boolean = false,
+    /** Opt in to the browser CloudMatch identity. Defaults ON so NVIDIA CloudMatch (post-2026-10-27)
+     *  always hands back a WebRTC endpoint instead of the dead RTSP allocation. */
+    val browserClientMode: Boolean = true,
     val experimentalDynamicNetworkAdjustment: Boolean = false,
     val experimentalDynamicMinimumBitrateMbps: Int = 5,
     val mouseSensitivity: Float = 1f,
