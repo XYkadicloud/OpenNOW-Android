@@ -62,6 +62,19 @@ android {
 
     }
 
+    // A checked-in debug key. Gradle otherwise generates ~/.android/debug.keystore on demand, which
+    // on a fresh CI runner is a brand-new key every run — so every CI APK had a different signature
+    // and `adb install -r` failed with INSTALL_FAILED_UPDATE_INCOMPATIBLE, forcing an uninstall that
+    // wipes the saved login. One shared debug key makes sideloaded updates replace in place.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = rootProject.file("keystore/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
