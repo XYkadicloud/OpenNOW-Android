@@ -50,7 +50,14 @@ jobs:
           echo "sdk.dir=$SDK" > local.properties
 
       - name: Build debug APK
-        run: ./gradlew --no-daemon --no-configuration-cache assembleDebug
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          export CMAKE="$SDK/cmake/3.31.6/bin/cmake"
+          export CMAKE_POLICY_VERSION_MINIMUM=3.5
+          echo "Using CMAKE=$CMAKE"
+          ./gradlew --no-daemon --no-configuration-cache assembleDebug
 
       - name: Collect APK
         run: |
