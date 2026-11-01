@@ -23,6 +23,19 @@ androidComponents.onVariants { variant ->
     )
 }
 
+// -Popennow.noHome=true ships the app without the android.intent.category.HOME role, so it never
+// offers itself as a replacement TV home screen. The UI, game shortcuts and TV channels are
+// identical; only the launcher takeover is dropped. Two APKs, same signature, same login state.
+val buildingWithoutHomeLauncher =
+    providers.gradleProperty("opennow.noHome").orNull.equals("true", ignoreCase = true)
+
+val sideloadManifest =
+    if (buildingWithoutHomeLauncher) {
+        "src/sideload-standard/AndroidManifest.xml"
+    } else {
+        "src/sideload/AndroidManifest.xml"
+    }
+
 val buildingPlayReleaseBundle =
     providers.gradleProperty("distribution").orNull.equals("play-store", ignoreCase = true) ||
         gradle.startParameter.taskNames.any { taskName ->
@@ -50,9 +63,29 @@ android {
 
         ndk {
             // Keep legacy Intel TV devices eligible; App Bundles deliver only the matching ABI.
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+            // -Popennow.abis=armeabi-v7a narrows the APK for sideloading onto 32-bit TVs with
+            // almost no free /data: the three unused ABI trees are ~66 MB of the ~113 MB APK.
+            val requestedAbis = (findProperty("opennow.abis") as String?)
+                ?.split(',')
+                ?.map(String::trim)
+                ?.filter(String::isNotEmpty)
+                ?.takeIf { it.isNotEmpty() }
+            abiFilters += requestedAbis ?: listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
         }
 
+    }
+
+    // A checked-in debug key. Gradle otherwise generates ~/.android/debug.keystore on demand, which
+    // on a fresh CI runner is a brand-new key every run — so every CI APK had a different signature
+    // and `adb install -r` failed with INSTALL_FAILED_UPDATE_INCOMPATIBLE, forcing an uninstall that
+    // wipes the saved login. One shared debug key makes sideloaded updates replace in place.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = rootProject.file("keystore/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {
@@ -73,12 +106,12 @@ android {
     }
 
     sourceSets {
-        getByName("debug").manifest.srcFile("src/sideload/AndroidManifest.xml")
+        getByName("debug").manifest.srcFile(sideloadManifest)
         getByName("release").manifest.srcFile(
             if (buildingPlayReleaseBundle) {
                 "src/playBundle/AndroidManifest.xml"
             } else {
-                "src/sideload/AndroidManifest.xml"
+                sideloadManifest
             },
         )
     }
@@ -91,7 +124,7 @@ android {
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
+            version = "3.31.6"
         }
     }
 
